@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 import uuid
+import json
+import os
 from streamlit_google_auth import Authenticate
 
 st.set_page_config(
@@ -13,15 +15,27 @@ WEBHOOK_URL = "https://n8n.srv1542745.hstgr.cloud/webhook/8f34b1ef-3ceb-4045-8e5
 
 FILE_UPLOAD_WEBHOOK = "https://n8n.srv1542745.hstgr.cloud/webhook/upload-file"
 
+credentials_data = {
+    "web": {
+        "client_id": st.secrets["GOOGLE_CLIENT_ID"],
+        "project_id": "enterprise-mcp-saas-devaprasad",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_secret": st.secrets["GOOGLE_CLIENT_SECRET"],
+        "redirect_uris": [
+            st.secrets["REDIRECT_URI"]
+        ]
+    }
+}
+
+os.makedirs(".streamlit", exist_ok=True)
+
+with open(".streamlit/google_credentials.json", "w") as f:
+    json.dump(credentials_data, f)
+
 authenticator = Authenticate(
-    secret_credentials={
-        "web": {
-            "client_id": st.secrets["GOOGLE_CLIENT_ID"],
-            "client_secret": st.secrets["GOOGLE_CLIENT_SECRET"],
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token"
-        }
-    },
+    secret_credentials_path=".streamlit/google_credentials.json",
     cookie_name="mcp_ai_cookie",
     cookie_key="mcp_ai_key",
     redirect_uri=st.secrets["REDIRECT_URI"],
@@ -39,7 +53,9 @@ if not st.session_state.get("connected"):
 
 user_info = st.session_state.get("user_info", {})
 
-st.sidebar.success(f"Signed in as:\n{user_info.get('email', 'Unknown')}")
+st.sidebar.success(
+    f"Signed in as:\n{user_info.get('email', 'Unknown')}"
+)
 
 if st.sidebar.button("Logout"):
 
