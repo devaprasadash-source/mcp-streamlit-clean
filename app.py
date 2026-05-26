@@ -14,7 +14,14 @@ WEBHOOK_URL = "https://n8n.srv1542745.hstgr.cloud/webhook/8f34b1ef-3ceb-4045-8e5
 FILE_UPLOAD_WEBHOOK = "https://n8n.srv1542745.hstgr.cloud/webhook/upload-file"
 
 authenticator = Authenticate(
-    secret_credentials_path=".streamlit/google_credentials.json",
+    secret_credentials={
+        "web": {
+            "client_id": st.secrets["GOOGLE_CLIENT_ID"],
+            "client_secret": st.secrets["GOOGLE_CLIENT_SECRET"],
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token"
+        }
+    },
     cookie_name="mcp_ai_cookie",
     cookie_key="mcp_ai_key",
     redirect_uri=st.secrets["REDIRECT_URI"],
