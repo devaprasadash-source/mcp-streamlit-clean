@@ -41,13 +41,15 @@ authenticator = Authenticate(
     redirect_uri=st.secrets["REDIRECT_URI"],
 )
 
-authenticator.login()
+authenticator.check_authentification()
 
 if not st.session_state.get("connected"):
 
     st.title("🤖 Enterprise MCP AI Assistant")
 
     st.info("Please sign in with Google to continue.")
+
+    authenticator.login()
 
     st.stop()
 
